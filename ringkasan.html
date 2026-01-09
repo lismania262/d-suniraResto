@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Ringkasan Pesanan</title>
+
+<style>
+body {
+    font-family:  Arial, Georgia,Times, serif;
+    background: #574343;
+    margin: 0;
+    padding-bottom: 120px;
+}
+
+.header {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+.container {
+    padding: 15px;
+}
+
+/* ITEM */
+.item {
+    background: white;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+.item img {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-info h4 {
+    margin: 0 0 5px;
+}
+
+.item-info p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.item-right {
+    text-align: right;
+}
+
+.qty {
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* TOTAL */
+.total-box {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.total {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.section h3 {
+  margin: 0 0 10px;
+}
+
+.payment-row {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.payment-row .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.arrow {
+  font-size: 22px;
+  color: #999;
+}
+
+.pay-sheet {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+  background: #fff;
+  border-radius: 12px;
+  margin-top: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+.pay-sheet.show {
+  max-height: 300px; /* cukup untuk 3 opsi */
+}
+
+.pay-sheet div {
+  padding: 16px;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.pay-sheet div:last-child {
+  border-bottom: none;
+}
+
+.pay-sheet div:hover {
+  background: #f5f5f5;
+}
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -4px 10px rgba(0,0,0,.1);
+}
+
+.bottom-bar .label {
+    font-size: 14px;
+    color: #666;
+}
+
+.bottom-bar .price {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.btn-order {
+    background: #545545;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: bold;
+}
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    margin-top: 15px;
+    box-sizing:border-box;
+}
+
+.note {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    padding: 12px;
+    min-height: 80px;
+    resize: none;
+    box-sizing:border-box;
+}
+
+.debit-modal {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: none;
+  z-index: 999;
+}
+
+.debit-box {
+  padding: 20px;
+  font-family: Arial;
+}
+
+.debit-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.debit-header span {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+label {
+  font-size: 14px;
+  margin-top: 16px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.row div {
+  flex: 1;
+}
+
+.info-box {
+  background: #f3f3f3;
+  padding: 12px;
+  border-radius: 12px;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.btn-save {
+  width: 100%;
+  background: #545545;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 24px;
+  font-size: 16px;
+}
+.qris-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.qris-box {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  width: 260px;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #eee;
+  border-top: 5px solid #00c853;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🛒 Ringkasan Pesanan</div>
+
+<div class="container" id="list"></div>
+
+<div class="container">
+ <div class="card">
+  <h3>Metode Pembayaran</h3>
+
+  <div class="payment-row" onclick="togglePay()">
+  <div class="left">
+    <div class="icon" id="payIcon">💵</div>
+    <span id="payText">Cash</span>
+  </div>
+  <div class="arrow">›</div>
+</div>
+
+
+  <div class="pay-sheet" id="paySheet">
+    <div onclick="selectPay('Cash')">💵 Cash</div>
+    <div onclick="selectPay('QRIS')">📱 QRIS</div>
+    <div onclick="selectPay('Debit')">🏧 Debit</div>
+  </div>
+</div>
+
+<div class="card">
+    <h4>📝 Catatan untuk Penjual</h4>
+    <textarea placeholder="Contoh: pedas sedang, tanpa bawang..."
+        class="note"></textarea>
+</div>
+
+<!-- DEBIT MODAL -->
+<div id="debitModal" class="debit-modal">
+  <div class="debit-box">
+
+    <div class="debit-header">
+      <span onclick="tutupDebit()">✕</span>
+      <h3>Tambah kartu</h3>
+    </div>
+
+    <label>Nomor kartu</label>
+    <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+
+    <div class="row">
+      <div>
+        <label>Berlaku sampai</label>
+        <input type="text" placeholder="MM/YY" maxlength="5">
+      </div>
+      <div>
+        <label>CVV</label>
+        <input type="password" placeholder="XXX" maxlength="3">
+      </div>
+    </div>
+
+    <div class="info-box">
+      Rp1.000 bakal dipotong sementara untuk kebutuhan verifikasi.
+    </div>
+
+    <button class="btn-save" onclick="prosesDebit()">
+      Simpan kartu
+    </button>
+  </div>
+</div>
+
+<!-- STATUS DEBIT -->
+<div id="debitStatus" class="qris-modal">
+  <div class="qris-box">
+    <div class="loader"></div>
+    <p id="debitText">Memproses pembayaran...</p>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+    <div>
+        <div class="label">Total Harga</div>
+        <div class="price" id="totalHarga">Rp 0</div>
+    </div>
+    <button class="btn-order" onclick="buatPesanan()">Pesan</button>
+</div>
+
+<script>
+const data = JSON.parse(localStorage.getItem("keranjang")) || [];
+const list = document.getElementById("list");
+let total = 0;
+
+data.forEach(item => {
+    total += item.harga * item.qty;
+
+    list.innerHTML += `
+        <div class="item">
+            <img src="${item.gambar || 'default.jpg'}">
+            <div class="item-info">
+                <h4>${item.nama}</h4>
+                <p>Rp ${item.harga.toLocaleString()}</p>
+            </div>
+            <div class="item-right">
+                <strong>Rp ${(item.harga * item.qty).toLocaleString()}</strong>
+                <div class="qty">${item.qty}</div>
+            </div>
+        </div>
+    `;
+});
+
+document.getElementById("totalHarga").innerText =
+  "Rp " + total.toLocaleString("id-ID");
+
+let paymentOpen = false;
+function togglePay() {
+  const sheet = document.getElementById("paySheet");
+  sheet.classList.toggle("show");
+}
+
+let metodeBayar = "Cash";
+
+function selectPay(method) {
+  metodeBayar = method;
+
+  document.getElementById("payText").innerText = method;
+  document.getElementById("paySheet").classList.remove("show");
+
+  const icon = document.getElementById("payIcon");
+  if (method === "Cash") icon.innerText = "💵";
+  if (method === "QRIS") icon.innerText = "📱";
+  if (method === "Debit") icon.innerText = "🏧";
+}
+
+function buatPesanan() {
+  if (metodeBayar === "QRIS") {
+    window.location.href = "qris.html";
+  } 
+  else if (metodeBayar === "Debit") {
+    tampilkanDebit();
+  } 
+  else {
+    window.location.href = "invoice.html";
+  }
+}
+
+function tampilkanDebit() {
+  document.getElementById("debitModal").style.display = "block";
+}
+
+function tutupDebit() {
+  document.getElementById("debitModal").style.display = "none";
+}
+
+function prosesDebit() {
+  document.getElementById("debitModal").style.display = "none";
+  document.getElementById("debitStatus").style.display = "flex";
+setTimeout(() => {
+    document.getElementById("debitText").innerText =
+      "Pembayaran berhasil ✅";
+  }, 2500);
+
+  setTimeout(() => {
+  document.getElementById("debitStatus").style.display = "none";
+
+  localStorage.setItem("metodeBayar", "Debit");
+  localStorage.setItem("statusBayar", "PAID");
+
+  window.location.href = "invoice.html";
+}, 4000);
+}
+</script>
+</body>
+</html>

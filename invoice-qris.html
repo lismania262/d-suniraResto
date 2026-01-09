@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Invoice QRIS</title>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.invoice {
+  background: white;
+  width: 320px;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+  text-align: center;
+  color: #8d7b6f;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.success {
+  text-align: center;
+  color: green;
+  margin-top: 15px;
+}
+</style>
+</head>
+<body>
+
+<div class="invoice">
+  <h2>Invoice QRIS</h2>
+
+  <div class="row">
+    <span>Nama</span>
+    <span id="nama"></span>
+  </div>
+
+  <div class="row">
+    <span>Meja</span>
+    <span id="meja"></span>
+  </div>
+
+  <div class="row">
+    <span>Metode</span>
+    <span>QRIS</span>
+  </div>
+
+  <div class="row total">
+    <span>Total</span>
+    <span>Rp 25.000</span>
+  </div>
+
+  <div class="success">Pembayaran Berhasil ✅</div>
+</div>
+
+<script>
+document.getElementById("nama").innerText = localStorage.getItem("nama");
+document.getElementById("meja").innerText = localStorage.getItem("meja");
+</script>
+
+</body>
+</html>

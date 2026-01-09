@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>QRIS Payment - D'SUNIRA</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg,#6fa9ff,#9fd2ff);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* CARD */
+.qris-card {
+  background: white;
+  width: 360px;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.25);
+  position: relative;
+}
+
+/* RED CORNER */
+.qris-card::before,
+.qris-card::after {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #e53935;
+}
+
+.qris-card::before {
+  top: 0;
+  left: 0;
+  border-radius: 18px 0 0 0;
+}
+
+.qris-card::after {
+  bottom: 0;
+  right: 0;
+  border-radius: 0 0 18px 0;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.header h2 {
+  margin: 5px 0;
+  font-size: 18px;
+}
+
+.header p {
+  font-size: 12px;
+  color: #666;
+}
+
+/* QR IMAGE */
+.qr-box {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.qr-box img {
+  width: 230px;
+  height: 230px;
+  border: 1px solid #ddd;
+}
+
+/* COUNTDOWN */
+.countdown {
+  background: #fff4e5;
+  color: #8a5a2b;
+  padding: 8px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.countdown.expired {
+  background: #ffecec;
+  color: #e53935;
+  font-weight: bold;
+}
+
+/* STATUS */
+.status {
+  text-align: center;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 5px solid #eee;
+  border-top: 5px solid #00c853;
+  border-radius: 50%;
+  margin: 12px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* BUTTON */
+.btn-paid {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  background: #8d7b6f;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #444;
+  margin-top: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="qris-card">
+
+  <div class="header">
+    <h2>D'SUNIRA</h2>
+    <p>NMID: ID216660000469581343923</p>
+  </div>
+
+  <div class="qr-box">
+    <!-- GANTI DENGAN FILE QR ASLI -->
+    <img src="qrcode.png" alt="QRIS">
+  </div>
+
+  <div class="countdown" id="countdown">
+    QRIS berlaku hingga <strong id="timer">05:00</strong>
+  </div>
+
+  <div class="status">
+    <div class="spinner" id="spinner"></div>
+    <p id="statusText">Menunggu pembayaran...</p>
+  </div>
+
+  <button class="btn-paid" id="btnBayar" onclick="konfirmasibayar()">
+    Konfirmasi Pembayaran
+  </button>
+
+  <div class="footer">
+    Dicetak oleh: 936009110
+  </div>
+
+</div>
+
+<script>
+let waktu = 300; // 5 menit
+let sudahBayar = false;
+
+const timerEl = document.getElementById("timer");
+const countdownBox = document.getElementById("countdown");
+const spinner = document.getElementById("spinner");
+const statusText = document.getElementById("statusText");
+const btnBayar = document.getElementById("btnBayar");
+
+const hitungMundur = setInterval(() => {
+  let menit = Math.floor(waktu / 60);
+  let detik = waktu % 60;
+
+  timerEl.innerText =
+    `${menit.toString().padStart(2,"0")}:${detik.toString().padStart(2,"0")}`;
+
+  waktu--;
+
+  if (waktu < 0 && !sudahBayar) {
+    clearInterval(hitungMundur);
+    countdownBox.classList.add("expired");
+    timerEl.innerText = "EXPIRED";
+    spinner.style.display = "none";
+    statusText.innerText = "QR Code sudah kedaluwarsa ❌";
+    btnBayar.disabled = true;
+    btnBayar.style.background = "#ccc";
+    btnBayar.innerText = "QRIS Expired";
+  }
+}, 1000);
+
+function konfirmasibayar() {
+  // Animasi loading
+  document.getElementById("statusText").innerText =
+    "Memverifikasi pembayaran...";
+  document.getElementById("spinner").style.display = "block";
+
+  // SIMULASI VERIFIKASI QRIS
+  setTimeout(() => {
+
+    // ✅ SIMPAN METODE BAYAR
+    localStorage.setItem("metodeBayar", "QRIS");
+
+    // (opsional) simpan ref pembayaran
+    localStorage.setItem(
+      "paymentRef",
+      "QR-" + Math.random().toString(36).substr(2,8).toUpperCase()
+    );
+
+    // PINDAH KE INVOICE
+    window.location.href = "invoice.html";
+
+  }, 2500);
+}
+</script>
+
+</body>
+</html>

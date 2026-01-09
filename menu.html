@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>D'Sunira Resto</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f3f3;
+    padding: 20px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+/* TAB */
+.tab {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #ddd;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.tab button.active {
+    background:#554545;
+    color: white;
+}
+
+/* MENU */
+.menu {
+    display: none;
+}
+
+.menu.active {
+    display: block;
+}
+
+.menu-item {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    gap: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.menu-item img {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.menu-info {
+    flex: 1;
+}
+
+.menu-info h4 {
+    margin: 0 0 5px;
+}
+
+.harga {
+    color: #8d7b6f;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.menu-info button {
+    background: #554545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.qty button {
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 50%;
+    background: #8d7b6f;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* KERANJANG */
+.keranjang {
+    background: white;
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 12px;
+}
+.payment-method {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.pay-option {
+    flex: 1;
+    background: #f4f4f4;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.pay-option img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+}
+
+.pay-option input {
+    display: none;
+}
+
+.pay-option span {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.pay-option input:checked + img {
+    filter: brightness(1.1);
+}
+
+.pay-option input:checked ~ span {
+    color: #554545;
+}
+
+.pay-option input:checked ~ img,
+.pay-option input:checked {
+    border-color: #554545;
+}
+/* TOMBOL PESAN SEKARANG */
+#btnPesan {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 420px;
+
+    background: #554545;
+    color: white;
+    border: none;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+/* SAAT DISABLED (BELUM PILIH MENU) */
+#btnPesan:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* SAAT AKTIF & DIHOVER */
+#btnPesan:not(:disabled):hover {
+    background: #3f2f2f;
+    transform: translateX(-50%) scale(1.03);
+}
+.sheet {
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 9999;
+    display: none;
+}
+
+.sheet-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sheet-image {
+    position: relative;
+}
+
+.sheet-image img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+}
+
+.sheet-body {
+    padding: 15px;
+    flex: 1;
+}
+
+.sheet-body h2 {
+    margin: 0;
+}
+
+.price {
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+textarea {
+    width: 100%;
+    height: 80px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.qty-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+
+.qty-row button {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #8d7b6f;
+    color: white;
+    font-size: 20px;
+}
+
+.sheet-footer {
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.sheet-footer button {
+    width: 100%;
+    background: #8d7b6f;
+    color: white;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Menu</h2>
+
+<!-- TAB KATEGORI -->
+<div class="tab">
+    <button id="btnMakanan" class="active" onclick="showMenu('makanan')">🍽️ Makanan</button>
+    <button id="btnMinuman" onclick="showMenu('minuman')">🥤 Minuman</button>
+    <button id="btnSnack" onclick="showMenu('snack')">🍟 Snack</button>
+</div>
+
+<div class="info">
+  <strong id="namaPemesan"></strong><br>
+  <span id="nomorMeja"></span>
+</div>
+
+<!-- MENU MAKANAN -->
+<div id="makanan" class="menu active">
+    <div class="menu-item">
+        <img src="nasi goreng.png">
+        <div class="menu-info">
+            <h4>Nasi Goreng</h4>
+            <div class="harga">Rp 30.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Nasi Goreng Istimewa',
+                    30000,
+                    'nasi goreng.png'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+
+    <div class="menu-item">
+        <img src="ayam bakar.png">
+        <div class="menu-info">
+            <h4>Ayam Bakar</h4>
+            <div class="harga">Rp 45.000</div>
+           <button class="btn-tambah"
+                onclick="openPopup(
+                    'Ayam Bakar',
+                    45000,
+                    'ayam bakar.png'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="baksourat.jpeg">
+        <div class="menu-info">
+            <h4>Bakso Urat Spesial</h4>
+            <div class="harga">Rp 50.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Bakso Urat Spesial',
+                    50000,
+                    'baksourat.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+     <div class="menu-item">
+        <img src="ayam lalapan.jpeg">
+        <div class="menu-info">
+            <h4>Ayam Penyet Lamongan</h4>
+            <div class="harga">Rp 42.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Ayam Lalapan',
+                    42000,
+                    'ayam lalapan.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="Black Pepper Chicken Panda Express.jpeg">
+        <div class="menu-info">
+            <h4>Black Pepper Chicken Panda Express</h4>
+            <div class="harga">Rp 68.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Black Pepper Chicken Panda Express',
+                    68000,
+                    'Black Pepper Chicken PAnda Express.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="Kwetiaw Sapi Lada Hitam.jpeg">
+        <div class="menu-info">
+            <h4>Kwetiaw Sapi Lada Hitam</h4>
+            <div class="harga">Rp 62.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Kwetiau sapi lada hitam',
+                    62000,
+                    'Kwetiaw Sapi Lada Hitam.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="Vegan Singapore Black Pepper Sauce Spaghetti.jpeg">
+        <div class="menu-info">
+            <h4>Vegan Singapore Black Pepper Sauce Spaghetti</h4>
+            <div class="harga">Rp 72.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Vegan Singapore Black Pepper Sauce Spaghetti',
+                    72000,
+                    'Vegan Singapore Black Pepper Sauce Spaghetti.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+</div>
+
+<!-- MENU MINUMAN -->
+<div id="minuman" class="menu">
+     <div class="menu-item">
+        <img src="biscoff frappe.jpeg">
+        <div class="menu-info">
+            <h4>biscoff frappe</h4>
+            <div class="harga">Rp 42.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Biscoff frappe',
+                    42000,
+                    'biscoff frappe.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="esteh.jpeg">
+        <div class="menu-info">
+            <h4>Ice Tea</h4>
+            <div class="harga">Rp 10.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Ice Tea',
+                    10000,
+                    'esteh.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="saltedcaramel.jpeg">
+        <div class="menu-info">
+            <h4>Salted Caramel Cheese cream</h4>
+            <div class="harga">Rp 45.000</div>
+           <button class="btn-tambah"
+                onclick="openPopup(
+                    'Salted caramel cheese cream',
+                    45000,
+                    'Saltedcaramel.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="Oreo milkshake.jpeg">
+        <div class="menu-info">
+            <h4>Oreo milkshake</h4>
+            <div class="harga">Rp 37.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Oreo milkshake',
+                    37000,
+                    'Oreo milkshake.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+     <div class="menu-item">
+        <img src="Creamy chocolate shake.jpeg">
+        <div class="menu-info">
+            <h4>Creamy chocolate shake</h4>
+            <div class="harga">Rp 45.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Creamy chocolate shake',
+                    45000,
+                    'Creamy chocolate shake.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+      <div class="menu-item">
+        <img src="galaxy summer.jpeg">
+        <div class="menu-info">eg
+            <h4>Galaxy Summer Mocktail</h4>
+            <div class="harga">Rp 45.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Galaxy Summer Mocktail',
+                    45000,
+                    'galaxy summer.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+     <div class="menu-item">
+        <img src="sparkling strawberry watermelon.jpeg">
+        <div class="menu-info">eg
+            <h4>sparkling strawberry watermelon</h4>
+            <div class="harga">Rp 42.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Sparkling strawberry watermelon',
+                    42000,
+                    'Sparkling strawberry watermelon.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+     <div class="menu-item">
+        <img src="Strawberry Lemonade Fizz.jpeg">
+        <div class="menu-info">eg
+            <h4>Strawberry Lemonade Fizz</h4>
+            <div class="harga">Rp 42.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Strawberry Lemonade Fizz',
+                    42000,
+                    'Strawberry Lemonade Fizz.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+</div>
+
+<!-- MENU SNACK -->
+<div id="snack" class="menu">
+    <div class="menu-item">
+        <img src="snack platter.jpeg">
+        <div class="menu-info">
+            <h4>snack platter</h4>
+            <div class="harga">Rp 15.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Snack Platter',
+                    15000,
+                    'Snack Platter.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+
+    <div class="menu-item">
+        <img src="Nutella Waffles.jpeg">
+        <div class="menu-info">
+            <h4>Nutella waffles</h4>
+            <div class="harga">Rp 25.000</div>
+           <button class="btn-tambah"
+                onclick="openPopup(
+                    'Nutella Waffles',
+                    25000,
+                    'Nutella Waffles.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+     <div class="menu-item">
+        <img src="Pancakes strawberry.jpeg">
+        <div class="menu-info">
+            <h4>Pancakes strawberry</h4>
+            <div class="harga">Rp 68.000</div>
+           <button class="btn-tambah"
+                onclick="openPopup(
+                    'Pancakes strawberry',
+                    68000,
+                    'Pancakes strawberry.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+      <div class="menu-item">
+        <img src="Mini Churro Bites.jpeg">
+        <div class="menu-info">
+            <h4>Mini Churro Bites</h4>
+            <div class="harga">Rp 35.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Mini Churro Bites',
+                    35000,
+                    'Mini Churro Bites.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="Caramel Cheesecake.jpeg">
+        <div class="menu-info">
+            <h4>Caramel Cheesecake</h4>
+            <div class="harga">Rp 45.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'Caramel Cheesecake',
+                    45000,
+                    'Caramel Cheesecake.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="Cheesecake strawberry.jpeg">
+        <div class="menu-info">
+            <h4>Cheesecake strawberry</h4>
+            <div class="harga">Rp 45.000</div>
+           <button class="btn-tambah"
+                onclick="openPopup(
+                    'Cheesecake strawberry',
+                    45000,
+                    'Cheesecake strawberry.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+    <div class="menu-item">
+        <img src="BASRENG CIKRUH.jpeg">
+        <div class="menu-info">
+            <h4>BASRENG CIKRUH</h4>
+            <div class="harga">Rp 25.000</div>
+            <button class="btn-tambah"
+                onclick="openPopup(
+                    'BASRENG CIKRUH',
+                    25000,
+                    'BASRENG CIKRUH.jpeg'
+                )">
+            Tambah
+        </button>
+        </div>
+    </div>
+</div>
+
+<button id="btnPesan" disabled>
+  Pesan Sekarang
+</button>
+
+<div id="sheet" class="sheet">
+  <div class="sheet-content">
+
+    <!-- HEADER IMAGE -->
+    <div class="sheet-image">
+      <img id="sheetImg" src="">
+      <button class="close" onclick="closeSheet()">✕</button>
+    </div>
+
+    <!-- INFO -->
+    <div class="sheet-body">
+      <h2 id="sheetNama"></h2>
+      <p class="price">Rp <span id="sheetHarga"></span></p>
+
+      <!-- CATATAN -->
+      <textarea placeholder="Catatan untuk restoran (opsional)"></textarea>
+
+      <!-- QTY -->
+      <div class="qty-row">
+        <button onclick="kurang()">−</button>
+        <span id="jumlah">1</span>
+        <button onclick="tambah()">+</button>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="sheet-footer">
+      <button onclick="addToCart()">
+        Tambah ke Keranjang
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+let keranjang = [];
+let selectedName = "";
+let selectedPrice = 0;
+let selectedImg = "";
+let qty = 1;
+
+/* TAB MENU */
+function showMenu(menu) {
+    const menus = ["makanan","minuman","snack"];
+    const btns = {
+        makanan:"btnMakanan",
+        minuman:"btnMinuman",
+        snack:"btnSnack"
+    };
+
+    menus.forEach(m => document.getElementById(m).style.display="none");
+    Object.values(btns).forEach(b => document.getElementById(b).classList.remove("active"));
+
+    document.getElementById(menu).style.display="block";
+    document.getElementById(btns[menu]).classList.add("active");
+}
+function openPopup(nama, harga, img) {
+    selectedName = nama;
+    selectedPrice = harga;
+    selectedImg = img;
+    qty = 1;
+
+    document.getElementById("sheetNama").innerText = nama;
+    document.getElementById("sheetHarga").innerText = "Rp " + harga.toLocaleString("id-ID");
+    document.getElementById("sheetImg").src = img;
+    document.getElementById("jumlah").innerText = qty;
+
+    document.getElementById("sheet").style.display = "block";
+}
+
+
+function closeSheet() {
+    document.getElementById("sheet").style.display = "none";
+}
+
+function tambah() {
+    qty++;
+    document.getElementById("jumlah").innerText = qty;
+}
+
+function kurang() {
+    if (qty > 1) qty--;
+    document.getElementById("jumlah").innerText = qty;
+}
+/* UPDATE TOMBOL PESAN */
+function updateButton() {
+    const btn = document.getElementById("btnPesan");
+    let totalItem = 0;
+    let totalHarga = 0;
+
+    keranjang.forEach(item => {
+        totalItem += item.qty;
+        totalHarga += item.harga * item.qty;
+    });
+
+    if (totalItem > 0) {
+        btn.disabled = false;
+        btn.innerText = `Pesan (${totalItem}) • Rp ${totalHarga.toLocaleString()}`;
+    } else {
+        btn.disabled = true;
+        btn.innerText = "Pesan Sekarang";
+    }
+}
+function addToCart() {
+    keranjang.push({
+        nama: selectedName,
+        harga: selectedPrice,
+        qty: qty,
+        gambar: document.getElementById("sheetImg").src
+    });
+
+    closeSheet();
+    updateButton();
+}
+
+const nama = localStorage.getItem("nama");
+const meja = localStorage.getItem("meja");
+
+document.getElementById("namaPemesan").innerText = nama;
+document.getElementById("nomorMeja").innerText = "Meja " + meja;
+
+/* PINDAH KE RINGKASAN */
+document.getElementById("btnPesan").onclick = () => {
+    localStorage.setItem("keranjang", JSON.stringify(keranjang));
+    window.location.href = "ringkasan.html";
+};
+</script>
+
+</body>
+</html>
